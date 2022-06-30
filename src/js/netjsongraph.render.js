@@ -165,7 +165,6 @@ class NetJSONGraphRender {
           data: categories,
         }
       : undefined;
-
     return {
       legend,
       series,
@@ -286,10 +285,32 @@ class NetJSONGraphRender {
    *
    */
   graphRender(JSONData, self) {
-    self.utils.echartsSetOption(
-      self.utils.generateGraphOption(JSONData, self),
-      self,
-    );
+    const media = [
+      {
+        query: {
+          minWidth: 320,
+          maxWidth: 500,
+        },
+        option: {
+          series: [
+            {
+              zoom: 1.2,
+            },
+          ],
+          title: {
+            textStyle: {
+              fontSize: 74,
+            },
+          },
+          toolbox: {
+            itemSize: 30,
+          },
+        },
+      },
+    ];
+    const basicOptions = self.utils.generateGraphOption(JSONData, self);
+    const customOptions = {...basicOptions, media};
+    self.utils.echartsSetOption(customOptions, self);
 
     window.onresize = () => {
       self.echarts.resize();

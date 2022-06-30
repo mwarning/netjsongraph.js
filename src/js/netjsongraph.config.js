@@ -65,6 +65,7 @@ const NetJSONGraphDefaultConfig = {
   },
 
   graphConfig: {
+    type: "graph",
     layout: "force",
     label: {
       show: true,
@@ -78,8 +79,6 @@ const NetJSONGraphDefaultConfig = {
     },
     roam: true,
     draggable: true,
-    focusNodeAdjacency: false,
-    hoverAnimation: true,
     legendHoverLink: true,
   },
 
