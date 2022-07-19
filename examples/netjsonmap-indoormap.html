@@ -1,125 +1,121 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>netjsongraph.js: Dark Colors</title>
-    <meta charset="utf-8" />
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
-      integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
-      crossorigin=""
-    />
-    <!-- theme can be easily customized via css -->
-    <link href="../src/css/netjsongraph-theme.css" rel="stylesheet" />
-    <link href="../src/css/netjsongraph.css" rel="stylesheet" />
 
-    <link rel="preload" href="./data/indoormap.jpg" as="image" />
-    <style type="text/css">
-      .njg-metadata {
-        left: 50px;
-      }
-    </style>
-  </head>
-  <body>
-    <script type="text/javascript" src="../dist/netjsongraph.min.js"></script>
-    <script>
-      /*
-            The demo is used to show how to set indoor map.
-            Mainly the operation of leaflet.
-            See `onLoad` below for details.
-        */
-      const graph = new NetJSONGraph("./data/netjsonmap-indoormap.json", {
-        render: "map",
-        // set map tiles config, can set multiple values.
-        mapTileConfig: [
-          {
-            label: "Blue Street",
-            urlTemplate:
-              "http://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetPurplishBlue/MapServer/tile/{z}/{y}/{x}",
-            options: {
-              minZoom: 0.25,
-              maxZoom: 18,
-            },
+<head>
+  <title>Indoor map</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+    integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
+    crossorigin="" />
+  <!-- theme can be easily customized via css -->
+  <link href="../src/css/netjsongraph-theme.css" rel="stylesheet" />
+  <link href="../src/css/netjsongraph.css" rel="stylesheet" />
+
+  <link rel="preload" href="./data/indoormap.jpg" as="image" />
+</head>
+
+<body>
+  <script type="text/javascript" src="../dist/netjsongraph.min.js"></script>
+  <script>
+    /*
+          The demo is used to show how to set indoor map.
+          Mainly the operation of leaflet.
+          See `onLoad` below for details.
+      */
+    const graph = new NetJSONGraph("./data/netjsonmap-indoormap.json", {
+      render: "map",
+      // set map initial state.
+      mapOptions: {
+        center: [48.577, 18.539],
+        zoom: 5.7,
+        zoomSnap: 0.3,
+        minZoom: 3.5,
+        maxZoom: 9,
+        nodeConfig: {
+          label: {
+            offset: [0, -10],
+            fontSize: '14px',
+            fontWeight: 'bold',
+            color: 'red'
           },
-        ],
-        // set map initial state.
-        mapOptions: {
-          center: [48.577, 18.539],
-          zoom: 6,
-          nodeConfig: {
-            label: {
-              offset: [0, -10],
-            },
-          },
+          animation: false,
         },
+        linkConfig: {
+          linkStyle: {
+            width: 4,
+          },
+          animation: false,
+        },
+      },
 
-        // Convert to internal json format
-        prepareData: function (data) {
-          data.nodes.map((node) => {
-            node.label = node.name;
-            node.properties = Object.assign(node.properties || {}, {
-              location: node.location,
-            });
+      // Convert to internal json format
+      prepareData: function (data) {
+        data.nodes.map((node) => {
+          node.label = node.name;
+          node.properties = Object.assign(node.properties || {}, {
+            location: node.location,
           });
-        },
+        });
+      },
 
-        onLoad: function presentIndoormap() {
-          const gui = this.utils.getGUI(this);
-          gui.init();
-          if (this.config.metadata) {
-            gui.createAboutContainer(graph);
-            this.utils.updateMetadata.call(this);
-          }
-          if (this.config.switchMode) {
-            gui.renderModeSelector.onclick = () => {
-              if (this.config.render === this.utils.mapRender) {
-                this.config.render = this.utils.graphRender;
-                this.echarts.dispose();
-                graph = new NetJSONGraph(this.data, {
-                  ...this.config,
-                });
-                graph.render();
-              } else {
-                this.config.render = this.utils.mapRender;
-                this.config.render(this.data, this);
-              }
-            };
-          }
-          this.config.onClickElement = (type, data) => {
-            let nodeLinkData;
-            if (type === "node") {
-              nodeLinkData = this.utils.nodeInfo(data);
+      onLoad: function presentIndoormap() {
+        const gui = this.utils.getGUI(this);
+        gui.init();
+        if (this.config.metadata) {
+          gui.createAboutContainer(graph);
+          gui.sideBar.classList.add("hidden");
+          this.utils.updateMetadata.call(this);
+        }
+        if (this.config.switchMode) {
+          gui.renderModeSelector.onclick = () => {
+            if (this.config.render === this.utils.mapRender) {
+              this.config.render = this.utils.graphRender;
+              this.echarts.dispose();
+              graph = new NetJSONGraph(this.data, {
+                ...this.config,
+              });
+              graph.render();
             } else {
-              nodeLinkData = this.utils.linkInfo(data);
+              this.config.render = this.utils.mapRender;
+              this.config.render(this.data, this);
             }
-            gui.getNodeLinkInfo(type, nodeLinkData);
-            gui.sideBar.classList.remove("hidden");
           };
+        }
+        this.config.onClickElement = (type, data) => {
+          let nodeLinkData;
+          if (type === "node") {
+            nodeLinkData = this.utils.nodeInfo(data);
+          } else {
+            nodeLinkData = this.utils.linkInfo(data);
+          }
+          gui.getNodeLinkInfo(type, nodeLinkData);
+          gui.sideBar.classList.remove("hidden");
+        };
 
-          let netjsonmap = this.leaflet,
-            image = new Image();
+        const netjsonmap = this.leaflet;
+        const image = new Image();
+        image.src = './data/floorplan.png';
 
-          image.src = "./data/indoormap.jpg";
-          image.onload = () => {
-            let southWest = {lat: 53.39105802617281, lng: 2.258377075195313},
-              northEast = {lat: 43.05747491746001, lng: 35.327825546264656},
-              bounds = new L.LatLngBounds(southWest, northEast);
+        const southWest = { lat: 53.39105802617281, lng: 2.258377075195313 },
+          northEast = { lat: 43.05747491746001, lng: 35.327825546264656 };
 
-            // remove the geographic map
-            netjsonmap.eachLayer((layer) => {
-              if (layer._url) {
-                netjsonmap.removeLayer(layer);
-              }
-            });
-            // add indoormap image
-            L.imageOverlay(image, bounds).addTo(netjsonmap);
+        const bounds = new L.LatLngBounds(southWest, northEast);
+        netjsonmap.setMaxBounds(bounds);
 
-            this.utils.hideLoading();
-          };
-        },
-      });
+        // remove the geographic map
+        netjsonmap.eachLayer((layer) => {
+          if (layer._url) {
+            netjsonmap.removeLayer(layer);
+          }
+        });
+        // add indoormap image
+        L.imageOverlay(image, bounds).addTo(netjsonmap);
+        this.utils.hideLoading();
+      },
+    });
 
-      graph.render();
-    </script>
-  </body>
+    graph.render();
+  </script>
+</body>
+
 </html>
