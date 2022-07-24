@@ -1,0 +1,9 @@
+{"nodes": [{
+      "id": "172.16.146.99",
+      "label": "FusolabNAS",
+      "properties": {
+        "hostname": "NAS.nnx",
+        "gateway": false,
+        "time": "2019-04-03T05:06:54.000Z"
+      }
+    }], "links": []}

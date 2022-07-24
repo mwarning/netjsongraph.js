@@ -12,8 +12,17 @@
     <script type="text/javascript">
         // `graph` render defaultly.
         // We can add data gradually by array.
-        const graph = new NetJSONGraph("./data/netjsonmap.json");
+        const graph = new NetJSONGraph("./data/dummy.json");
 
         graph.render();
+
+        var json = JSON.parse(`{"nodes": [{
+        "id": "192.168.176.10",
+        "label": "qqgq9lpk",
+        "location": {"lng": 24.555999999999997, "lat": 45.3895}
+        }], "links": []}`);
+
+        graph.utils.JSONDataUpdate.call(graph, json);
+
     </script>
 </html>
